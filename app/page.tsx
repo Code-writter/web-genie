@@ -1,10 +1,24 @@
 import { Button } from "@/components/ui/button"
-import prisma from "@/lib/db"
+
+import { trpc, getQueryClient } from "@/trpc/server"
+
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
+
+import Client from "./client"
+
+import { Suspense } from "react"
+
+import Loader from "@/components/loader"
+
 export default async function App(){
-  const users = prisma.user.findMany();
+  const queryClient = getQueryClient()
+  void queryClient.prefetchQuery(trpc.hello.queryOptions({text : "Abhishek"}));
+
   return (
-    <div>
-        <Button className=" bg-amber-300" >Hello world</Button>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)} >
+      <Suspense fallback={<Loader/>} >
+      <Client />
+      </Suspense>
+    </HydrationBoundary>
   )
 }
