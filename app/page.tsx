@@ -1,24 +1,29 @@
-import { Button } from "@/components/ui/button"
+'use client'
 
-import { trpc, getQueryClient } from "@/trpc/server"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useTRPC } from "@/trpc/client";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 
-import Client from "./client"
+export default function App(){
+  const [value, setValue] = useState("");
 
-import { Suspense } from "react"
-
-import Loader from "@/components/loader"
-
-export default async function App(){
-  const queryClient = getQueryClient()
-  void queryClient.prefetchQuery(trpc.hello.queryOptions({text : "Abhishek"}));
+  const trpc = useTRPC()
+  const invoke = useMutation(trpc.invoke.mutationOptions({
+    onSuccess : () => {
+      toast("Done the work");
+    }
+  }))
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)} >
-      <Suspense fallback={<Loader/>} >
-      <Client />
-      </Suspense>
-    </HydrationBoundary>
+    <div className=" max-w-8xl p-20" >
+        <Input value={value}  onChange={(e) => setValue(e.target.value)} />
+        <Button
+          onClick={() => invoke.mutate({value : value})}
+        >click me</Button>
+    </div>
   )
 }
