@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (sgz5plgdqr4mni7x22aa) or template name (web-genie) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("web-genie") # Sync sandbox
+# sandbox = await AsyncSandbox.create("web-genie") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('web-genie')
+
+team_id = "6302e33d-ce81-4c15-97c0-b32b7f1822a5"
+start_cmd = "/compile.sh"
+dockerfile = "e2b.Dockerfile"
+template_name = "web-genie"
+template_id = "sgz5plgdqr4mni7x22aa"
