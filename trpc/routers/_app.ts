@@ -19,8 +19,7 @@ export const appRouter = createTRPCRouter({
           email : input.text
         }
       })
-    })
-
+    }),
   hello: baseProcedure
     .input(
       z.object({
