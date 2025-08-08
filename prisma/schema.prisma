@@ -18,3 +18,38 @@ model User{
   id Int @id @default(autoincrement())
   name String
 }
+
+enum RoleTypes {
+  USER
+  ASSISTANT
+}
+
+enum MessageType {
+  RESULT
+  ERROR
+}
+
+model Message {
+  id String @id @default(uuid())
+  content String
+  role RoleTypes
+  type MessageType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fragment Fragement?
+}
+
+model Fragement {
+  id String @id @default(uuid())
+  messageId String @unique
+  message Message @relation(fields: [messageId], references: [id],onDelete: Cascade)
+
+  sandboxUrl String
+  title String
+  files Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

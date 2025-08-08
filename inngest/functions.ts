@@ -7,11 +7,15 @@ import { z } from 'zod'
 import { createAgent, createNetwork, createTool, openai } from '@inngest/agent-kit';
 import { inngest } from "./client";
 import { PROMPT } from "@/prompt/prompt";
+import prisma from "@/lib/db";
+
+// Types
+import { AgentState } from "@/types/agent-interfaces";
 
 
-export const invoke = inngest.createFunction(
-  { id: "invoke" },
-  { event: "test" },
+export const codeAgentFunctions = inngest.createFunction(
+  { id: "code-agent" },
+  { event: "code-agent/run" },
 
   async ({ event, step }) => {
 
@@ -23,7 +27,7 @@ export const invoke = inngest.createFunction(
 
     // Connect the LLM model
 
-      const codeAgent = createAgent({
+      const codeAgent = createAgent <AgentState> ({
         name: 'code-agent',
         description : "An expert coding agent",
         system: PROMPT,
@@ -161,7 +165,7 @@ export const invoke = inngest.createFunction(
         }
       });
 
-      const network = createNetwork({
+      const network = createNetwork <AgentState> ({
         name : "coding-agent-network",
         agents : [codeAgent],
         maxIter : 15,
@@ -179,12 +183,44 @@ export const invoke = inngest.createFunction(
 
 
       const result = await network.run(event.data.value);
+
+      // !Error
+      const isError = !result.state.data.summary ||Object.keys(result.state.data.files || {}).length === 0;
     // generate the URL
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
         const sandbox = await getSandbox(sandboxId)
         const host = sandbox.getHost(3000);
         return `https://${host}`
+    })
+
+    // * After the job store the data in the database
+    await step.run("save-result", async () => {
+      // Before saving check for the error
+      if(isError){
+        return await prisma.message.create({
+          data : {
+            content : "Something went wrong, try again.",
+            role : "ASSISTANT",
+            type : "ERROR"
+          } 
+        })
+      }
+        return await prisma.message.create({
+          data : {
+            content : result.state.data.summary,
+            role : "ASSISTANT",
+            type : "RESULT",
+
+            fragment : {
+              create : {
+                sandboxUrl: sandboxUrl,
+                files : result.state.data.files,
+                title : "Fragment"
+              }
+            }
+          }
+        })
     })
 
     return { 
