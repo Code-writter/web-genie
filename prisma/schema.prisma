@@ -14,9 +14,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id Int @id @default(autoincrement())
+model Project {
+  id String @id @default(uuid())
   name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message []
 }
 
 enum RoleTypes {
@@ -39,6 +44,8 @@ model Message {
   updatedAt DateTime @updatedAt
 
   fragment Fragement?
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Fragement {
