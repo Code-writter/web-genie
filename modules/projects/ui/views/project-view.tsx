@@ -13,6 +13,7 @@ import { Suspense, useState } from "react";
 import Loader from "@/components/loader";
 import { Fragment } from "@/lib/generated/prisma";
 import ProjectHeader from "../components/project-header";
+import FragmentWeb from "../components/fragment-web";
 
 interface Props {
     projectId : string
@@ -51,10 +52,8 @@ export default function ProjectView({projectId} : Props){
                 <ResizablePanel
                     defaultSize={65}
                     minSize={50}
-                    className=" "
                 >
-                    {/* Project view */}
-                    {/* {JSON.stringify(messages, null, 2)} */}
+                    {!! activeFragment && <FragmentWeb data={activeFragment} /> } 
                 </ResizablePanel>
             </ResizablePanelGroup>
         </div>
