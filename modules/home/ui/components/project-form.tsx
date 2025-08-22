@@ -14,10 +14,8 @@ import { cn } from '@/lib/utils'
 import { useTRPC } from '@/trpc/client'
 import { Button } from '@/components/ui/button'
 import { Form, FormField } from '@/components/ui/form'
+import { useRouter } from 'next/navigation'
 
-interface Props {
-    projectId : string
-}
 
 const formSchema = z.object({
     value : z.string()
@@ -26,22 +24,21 @@ const formSchema = z.object({
 })
 
 
-export default function PromptForm({projectId} : Props){
+export default function ProjectForm(){
 
-
+    const router = useRouter()
     const trpc = useTRPC()
     const queryClient = useQueryClient()
 
-    const createMessage = useMutation(trpc.messages.create.mutationOptions({
-        onSuccess : () => {
-            form.reset();
+    const createProject= useMutation(trpc.projects.create.mutationOptions({
+        onSuccess : (data) => {
             queryClient.invalidateQueries(
-                trpc.messages.getMany.queryOptions({
-                    projectId
-                })
+                trpc.projects.getMany.queryOptions()
             )
 
             // TODO : Invalidate Usage status
+
+            router.push(`/projects/${data.id }`)
 
         },
         onError : (error) => {
@@ -61,16 +58,15 @@ export default function PromptForm({projectId} : Props){
     })
 
     const onSubmit = async (values : z.infer<typeof formSchema >) => {
-        await createMessage.mutateAsync({
+        await createProject.mutateAsync({
             value : values.value,
-            projectId
         })
     }
 
 
     const [isFocused, setIsFocused] = useState(false);
-    const showUsage = false;
-    const isPending = createMessage.isPending
+
+    const isPending = createProject.isPending
     const isButtonDisabled = isPending || !form.formState.isValid
 
     return (
@@ -81,13 +77,12 @@ export default function PromptForm({projectId} : Props){
                     cn(
                         " relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
                         isFocused && "shadow-xs",
-                        showUsage && "rounded-t-none"
                     )
                 }
             >
                 <FormField 
                     control={ form.control}
-                    name='value'
+                    name="value"
                     render={({field}) => (
                         <TextAreaAutosize 
                             {...field}
@@ -110,7 +105,7 @@ export default function PromptForm({projectId} : Props){
 
                 <div className=' flex gap-x-2 justify-between items-end pt-2' >
                     <div className=' text-[10px] text-muited-foreground font-mono' >
-                        <kbd className=' ml-auto pointer-events-none inline-flex h-5 select-none  items-center gap-1 roudned border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground   ' >
+                        <kbd className=' ml-auto pointer-events-none inline-flex h-5 select-none  items-center gap-1 roudned border bg-muted px-2 py-2 rounded font-mono text-[10px] font-medium text-muted-foreground   ' >
                             <span>
                                 &#8984;
                             </span> Enter 
