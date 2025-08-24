@@ -19,6 +19,8 @@ export default function PromptContainer({
     setActiveFragment
 } : Props){
     const bottomRef = useRef <HTMLDivElement> (null)
+    const lastAssistantMessageIdRef = useRef <string | null > (null)
+
     const trpc = useTRPC()
     const {data : messages} = useSuspenseQuery(trpc.messages.getMany.queryOptions({
         projectId
@@ -28,13 +30,18 @@ export default function PromptContainer({
     }))
 
     useEffect(() => {
-        const lastAssistantResponseWithFragment = messages.findLast(
-            (message) => message.role === "ASSISTANT" && !! message.fragment
-        )
+        const lastAssistantMessage = messages.findLast(
+            (message) => message.role === "ASSISTANT" 
+        );
 
-        if(lastAssistantResponseWithFragment){
-            setActiveFragment(lastAssistantResponseWithFragment.fragment)
+        if(
+            lastAssistantMessage?.fragment &&
+            lastAssistantMessage.id !== lastAssistantMessageIdRef.current
+        ){
+            setActiveFragment(lastAssistantMessage.fragment)
+            lastAssistantMessageIdRef.current = lastAssistantMessage.id
         }
+
     }, [messages, setActiveFragment])
 
     useEffect(() => {
