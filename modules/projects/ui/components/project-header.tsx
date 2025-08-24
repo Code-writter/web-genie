@@ -32,8 +32,7 @@ const ProjectHeader = ({projectId} : Props) => {
         trpc.projects.getOne.queryOptions({id : projectId})
     )
 
-    const [ theme, setTheme] = useTheme()
-
+    const { theme, setTheme } = useTheme()
 
     return(
         <header className=" p-2 flex justify-between items-center border-b " >
