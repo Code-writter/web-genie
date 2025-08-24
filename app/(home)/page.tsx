@@ -1,4 +1,5 @@
 import ProjectForm from "@/modules/home/ui/components/project-form";
+import { ProjectsList } from "@/modules/home/ui/components/projects-list";
 import Image from "next/image";
 
 export default function App(){
@@ -6,6 +7,7 @@ export default function App(){
     return(
         <div className=" flex flex-col max-w-5xl mx-auto w-full" >
             <section className=" space-y-6  py-[16vh] 2xl:py-48 " >
+                
                 <div className=" flex flex-col items-center" >
                     <Image 
                         src="/logo/logo.svg"
@@ -27,6 +29,7 @@ export default function App(){
                     <ProjectForm  />
                 </div>
             </section>
+            <ProjectsList />
         </div>
     )
 

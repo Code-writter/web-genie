@@ -15,6 +15,7 @@ import { useTRPC } from '@/trpc/client'
 import { Button } from '@/components/ui/button'
 import { Form, FormField } from '@/components/ui/form'
 import { useRouter } from 'next/navigation'
+import { PROJECT_TEMPLATES } from '../../constants'
 
 
 const formSchema = z.object({
@@ -63,6 +64,15 @@ export default function ProjectForm(){
         })
     }
 
+    const onSelece = (value : string) => {
+        form.setValue("value", value, {
+            // simulate to tha same state as the user types
+            shouldDirty : true,
+            shouldTouch : true,
+            shouldValidate : true
+        })
+    }
+
 
     const [isFocused, setIsFocused] = useState(false);
 
@@ -71,62 +81,83 @@ export default function ProjectForm(){
 
     return (
         <Form {...form} >
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className={
-                    cn(
-                        " relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
-                        isFocused && "shadow-xs",
-                    )
-                }
+            <section
+                className='space-y-6'
             >
-                <FormField 
-                    control={ form.control}
-                    name="value"
-                    render={({field}) => (
-                        <TextAreaAutosize 
-                            {...field}
-                            disabled={isPending}
-                            onFocus={() => setIsFocused(true)}
-                            onBlur={() => setIsFocused(false)}
-                            minRows={2}
-                            maxRows={8}
-                            className=' pt-4 resize-none border-none w-full outline-none bg-transparent '
-                            placeholder='Make a wish'
-                            onKeyDown={(e) => {
-                                if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){
-                                    e.preventDefault();
-                                    form.handleSubmit(onSubmit)(e)
-                                }
-                            }}
-                        />
-                    )}
-                />
-
-                <div className=' flex gap-x-2 justify-between items-end pt-2' >
-                    <div className=' text-[10px] text-muited-foreground font-mono' >
-                        <kbd className=' ml-auto pointer-events-none inline-flex h-5 select-none  items-center gap-1 roudned border bg-muted px-2 py-2 rounded font-mono text-[10px] font-medium text-muted-foreground   ' >
-                            <span>
-                                &#8984;
-                            </span> Enter 
-                        </kbd>
-                        &nbsp;to submit
-                    </div>
-                    <Button
-                        disabled={isButtonDisabled}
-                        className={
-                            cn(
-                                "size-8 rounded-full",
-                                isButtonDisabled && "bg-muted-foreground border"
-                            )
-                        }
-                    > 
-                    {
-                        isPending ? <Loader2Icon className='size-4 animate-spin' /> : <ArrowUpIcon />
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className={
+                        cn(
+                            " relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
+                            isFocused && "shadow-xs",
+                        )
                     }
-                    </Button>
+                >
+                    <FormField 
+                        control={ form.control}
+                        name="value"
+                        render={({field}) => (
+                            <TextAreaAutosize 
+                                {...field}
+                                disabled={isPending}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                minRows={2}
+                                maxRows={8}
+                                className=' pt-4 resize-none border-none w-full outline-none bg-transparent '
+                                placeholder='Make a wish'
+                                onKeyDown={(e) => {
+                                    if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){
+                                        e.preventDefault();
+                                        form.handleSubmit(onSubmit)(e)
+                                    }
+                                }}
+                            />
+                        )}
+                    />
+    
+                    <div className=' flex gap-x-2 justify-between items-end pt-2' >
+                        <div className=' text-[10px] text-muited-foreground font-mono' >
+                            <kbd className=' ml-auto pointer-events-none inline-flex h-5 select-none  items-center gap-1 roudned border bg-muted px-2 py-2 rounded font-mono text-[10px] font-medium text-muted-foreground   ' >
+                                <span>
+                                    &#8984;
+                                </span> Enter 
+                            </kbd>
+                            &nbsp;to submit
+                        </div>
+                        <Button
+                            disabled={isButtonDisabled}
+                            className={
+                                cn(
+                                    "size-8 rounded-full",
+                                    isButtonDisabled && "bg-muted-foreground border"
+                                )
+                            }
+                        > 
+                        {
+                            isPending ? (<Loader2Icon className='size-4 animate-spin' /> )
+                            : (<ArrowUpIcon />)
+                        }
+                        </Button>
+                    </div>
+                </form>
+
+                <div className='flex-wrap justify-center gap-2 hidden md:flex max-w-3xl' >
+                        {
+                            PROJECT_TEMPLATES.map((template) => (
+                                <Button
+                                    key={template.title}
+                                    variant={'outline'}
+                                    size={"sm"}
+                                    className=' bg-white dark:bg-sidebar dark:hover:bg-background '
+                                    onClick={() => onSelece(template.prompt) }
+                                >
+                                    {template.emoji} {template.title}
+                                </Button>
+                            ))
+                        }
                 </div>
-            </form>
+            </section>
         </Form>
     )
 }
