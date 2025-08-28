@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button"
 import{
     SignedIn, 
     SignedOut, 
-    SignInButton, 
-    SignOutButton
+    SignUpButton, 
+    SignInButton
 } from "@clerk/nextjs"
+import UserControl from "./user-control"
 
 
 export default function Navbar(){
@@ -23,8 +24,27 @@ export default function Navbar(){
                     Web Genine
                 </span>
             </Link>
-            </div>
 
+                <SignedOut>
+                    <div className=" flex gap-2 " >
+                        <SignUpButton>
+                            <Button variant={"outline"} size={"sm"} >
+                                SignUp
+                            </Button>
+                        </SignUpButton>
+                        <SignInButton>
+                            <Button size={"sm"} >
+                                SignUp
+                            </Button>
+                        </SignInButton>
+                    </div>
+                </SignedOut>
+
+                <SignedIn>
+                    <UserControl showName />
+                </SignedIn>
+
+            </div>
         </nav>
     )
 }

@@ -19,7 +19,7 @@ export default function App(){
 
                 </div>
 
-                <h1 className=" text-2xl md:text-5xl font-bold text-center" >
+                <h1 className=" text-2xl md:text-5xl font-bold text-center font-serif " >
                     Wish for the website
                 </h1>
                 <p className=" text-lg md:text-xl text-muted-foreground text-center" >

@@ -5,7 +5,7 @@ const isPublicRoute = createRouteMatcher([
     "/sign-in(.*)" , 
     "/sign-up(.*) ",
     // If not then backgroud jobs will not run 
-    "/api/inngest(.*) ",
+    "/api(.*)"
 ])
 
 export default clerkMiddleware(async (auth, req) => {
